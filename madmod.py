@@ -8,8 +8,11 @@ def subcmd_list(args):
 def subcmd_create(args):
     print "create"
 
-def subcmd_remove(args):
-    print "remove"
+def subcmd_install(args):
+    print "install"
+
+def subcmd_uninstall(args):
+    print "uninstall"
 
 def main():
     """ Runs program and handles command line options """
@@ -23,16 +26,20 @@ def main():
     lp.set_defaults(func=subcmd_list)
     # A create command
     cp = subp.add_parser('create',help='Create a module')
-    cp.add_argument('dirname',action='store',help='Directory to create module')
+    cp.add_argument('dirname',action='store',help='Create modules into dirname')
     cp.set_defaults(func=subcmd_create)
-    # A remove command
-    rp = subp.add_parser('remove',help='Remove an existing module')
-    rp.add_argument('modname',action='store',help='The module to remove')
-    rp.set_defaults(func=subcmd_remove)
+    # An install command
+    ip = subp.add_parser('install',help='Install an existing module')
+    ip.add_argument('dirname',action='store',help='Install modules from dirname')
+    ip.set_defaults(func=subcmd_install)
+    # An uninstall command
+    up = subp.add_parser('uninstall',help='Remove an existing module')
+    up.add_argument('modname',action='store',help='The module to uninstall')
+    up.set_defaults(func=subcmd_uninstall)
 
     args = p.parse_args()
     #call subcmd
-    args.fun(args)
+    args.func(args)
     path_madlib_src = os.environ.get('PATH_MADLIB_SRC')
     if path_madlib_src != None:
         print path_madlib_src
