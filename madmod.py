@@ -1,17 +1,40 @@
 #!/usr/bin/env python
 import argparse
-import yaml
+import yaml,os
+# sub-command function
+def subcmd_list(args):
+    print "list"
+
+def subcmd_create(args):
+    print "create"
+
+def subcmd_remove(args):
+    print "remove"
+
 def main():
     """ Runs program and handles command line options """
     p = argparse.ArgumentParser(
         description= 'module manager for madlib',
-        prog='madmod',
-        usage='%(prog)s [options]')
-    p.add_argument('--init',action='store',help='initialize the destination folder of module')
-    p.add_argument('--add',action='store',help='add the destination folder of module')
-    p.add_argument('--list',action='store_true',help='list all modules in configure file')
-    p.add_argument('--prefix',action='store',help='set the prefix of path for config file')
-    p.parse_args()
-#    p.print_help()
+        prog='madmod')
+    subp = p.add_subparsers(help='commands')
+    # A list command
+    lp = subp.add_parser('list',help='List existing modules')
+    lp.add_argument('dirname',action='store',help='Directory to list')
+    lp.set_defaults(func=subcmd_list)
+    # A create command
+    cp = subp.add_parser('create',help='Create a module')
+    cp.add_argument('dirname',action='store',help='Directory to create module')
+    cp.set_defaults(func=subcmd_create)
+    # A remove command
+    rp = subp.add_parser('remove',help='Remove an existing module')
+    rp.add_argument('modname',action='store',help='The module to remove')
+    rp.set_defaults(func=subcmd_remove)
+
+    args = p.parse_args()
+    #call subcmd
+    args.fun(args)
+    path_madlib_src = os.environ.get('PATH_MADLIB_SRC')
+    if path_madlib_src != None:
+        print path_madlib_src
 if __name__ == '__main__':
     main()
