@@ -4,6 +4,7 @@ import yaml,os
 # sub-command function
 def subcmd_list(args):
     print "list"
+    print args
 
 def subcmd_create(args):
     print "create"
@@ -18,7 +19,7 @@ def main():
     """ Runs program and handles command line options """
     p = argparse.ArgumentParser(
         description= 'module manager for madlib',
-        prog='madmod')
+        prog='madmm')
     subp = p.add_subparsers(help='commands')
     # A list command
     lp = subp.add_parser('list',help='List existing modules')
