@@ -1,20 +1,27 @@
 #!/usr/bin/env python
 import argparse
-import yaml,os
+import yaml,os,pprint
 # sub-command function
 def subcmd_list(args):
-    print "list"
-    print args
-
+    fileobj = open(args.dirname,'r')
+    yy = yaml.load_all(fileobj)
+#    print yaml.dump(yy,default_flow_style=False)
+    for doc in yy:
+        for key,v in doc.items():
+            for vs in v:
+                print 'module:%25s' % vs['name'],
+                if vs.has_key('depends'):
+                    print '\tdepends:',vs['depends'],
+                print 
+        print "\n",
 def subcmd_create(args):
     print "create"
-
 def subcmd_install(args):
     print "install"
-
 def subcmd_uninstall(args):
     print "uninstall"
-
+def list_module(path):
+    print "list_module"+path
 def main():
     """ Runs program and handles command line options """
     p = argparse.ArgumentParser(
@@ -37,9 +44,9 @@ def main():
     up = subp.add_parser('uninstall',help='Remove an existing module')
     up.add_argument('modname',action='store',help='The module to uninstall')
     up.set_defaults(func=subcmd_uninstall)
-
+    # parse arguments
     args = p.parse_args()
-    #call subcmd
+    # call subcmd
     args.func(args)
     path_madlib_src = os.environ.get('PATH_MADLIB_SRC')
     if path_madlib_src != None:
