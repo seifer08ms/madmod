@@ -1,11 +1,13 @@
 #!/usr/bin/env python
+# PYTHON_ARGCOMPLETE_OK
 import argparse
 import yaml,os,pprint
 p = argparse.ArgumentParser(
         description= 'module manager for madlib',
         prog='madmm')
 subp = p.add_subparsers(help='commands')
-path_module_yml=None
+path_module_yml = None
+yamlfile = None
 # check path utility function 
 def check_path(args):
     if not args.path_src_madlib:
@@ -20,6 +22,8 @@ def check_path(args):
 # print modules config
 def print_module(file):
     yy = yaml.load_all(file)
+    global yamlfile
+    yamlfile = yy
     for doc in yy:
         for k,v in doc.items():
             for mods in v:
@@ -38,7 +42,7 @@ def subcmd_create(args):
     print "create"
 def subcmd_install(args):
     check_path(args)
-    print "install"
+    print "install",args.modname
 def subcmd_uninstall(args):
     check_path(args) 
     print "uninstall"
@@ -60,6 +64,7 @@ def main():
     ip = subp.add_parser('install',help='Install an existing module')
     ip.add_argument('dir',action='store',help='Install modules from dir')
     ip.add_argument('-p','--path_src_madlib',default=path_src_madlib,action='store',help='src directory of MADlib.')
+    ip.add_argument('modname',action='store',help='The module to install')
     ip.set_defaults(func=subcmd_install)
     # An uninstall command
     up = subp.add_parser('uninstall',help='Remove an existing module')
