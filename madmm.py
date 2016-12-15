@@ -5,13 +5,22 @@ p = argparse.ArgumentParser(
         description= 'module manager for madlib',
         prog='madmm')
 subp = p.add_subparsers(help='commands')
+path_module_yml=None
 # sub-command function
 def check_path(args):
     if not args.path_src_madlib:
         exit(p.print_usage())
+    if not os.path.exists(args.path_src_madlib):
+        exit("ERROR:path_src_madlib doesn't exist!\nPlease try again with correct parameters!")
+    global path_module_yml
+    if os.path.isfile(os.path.join(args.path_src_madlib,'config','Modules.yml')):
+        path_module_yml = os.path.join(args.path_src_madlib,'config','Modules.yml')
+    else:
+        exit("ERROR:can't find Modules.yml!\nPlease try again with correct parameters!")
+
 def subcmd_list(args):
     check_path(args)
-    path_module_yml = os.path.join(args.path_src_madlib,'config','Modules.yml')
+    global path_module_yml
     fileobj = open(path_module_yml,'r')
     yy = yaml.load_all(fileobj)
 #    print yaml.dump(yy,default_flow_style=False)
