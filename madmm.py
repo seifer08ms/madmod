@@ -6,7 +6,7 @@ p = argparse.ArgumentParser(
         prog='madmm')
 subp = p.add_subparsers(help='commands')
 path_module_yml=None
-# sub-command function
+# check path utility function 
 def check_path(args):
     if not args.path_src_madlib:
         exit(p.print_usage())
@@ -17,21 +17,23 @@ def check_path(args):
         path_module_yml = os.path.join(args.path_src_madlib,'config','Modules.yml')
     else:
         exit("ERROR:can't find Modules.yml!\nPlease try again with correct parameters!")
-
+# print modules config
+def print_module(file):
+    yy = yaml.load_all(file)
+    for doc in yy:
+        for k,v in doc.items():
+            for mods in v:
+                print 'module:%25s' % mods['name'],
+                if mods.has_key('depends'):
+                    print '\tdepends:',mods['depends'],
+                print
+        print 
+# sub-command function
 def subcmd_list(args):
     check_path(args)
     global path_module_yml
     fileobj = open(path_module_yml,'r')
-    yy = yaml.load_all(fileobj)
-#    print yaml.dump(yy,default_flow_style=False)
-    for doc in yy:
-        for key,v in doc.items():
-            for vs in v:
-                print 'module:%25s' % vs['name'],
-                if vs.has_key('depends'):
-                    print '\tdepends:',vs['depends'],
-                print 
-        print "\n",
+    print_module(fileobj)
 def subcmd_create(args):
     print "create"
 def subcmd_install(args):
