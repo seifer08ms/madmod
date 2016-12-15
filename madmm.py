@@ -1,9 +1,18 @@
 #!/usr/bin/env python
 import argparse
 import yaml,os,pprint
+p = argparse.ArgumentParser(
+        description= 'module manager for madlib',
+        prog='madmm')
+subp = p.add_subparsers(help='commands')
 # sub-command function
+def check_path(args):
+    if not args.path_src_madlib:
+        exit(p.print_usage())
 def subcmd_list(args):
-    fileobj = open(args.dirname,'r')
+    check_path(args)
+    path_module_yml = os.path.join(args.path_src_madlib,'config','Modules.yml')
+    fileobj = open(path_module_yml,'r')
     yy = yaml.load_all(fileobj)
 #    print yaml.dump(yy,default_flow_style=False)
     for doc in yy:
@@ -17,39 +26,39 @@ def subcmd_list(args):
 def subcmd_create(args):
     print "create"
 def subcmd_install(args):
+    check_path(args)
     print "install"
 def subcmd_uninstall(args):
+    check_path(args) 
     print "uninstall"
 def list_module(path):
     print "list_module"+path
+# main function
 def main():
     """ Runs program and handles command line options """
-    p = argparse.ArgumentParser(
-        description= 'module manager for madlib',
-        prog='madmm')
-    subp = p.add_subparsers(help='commands')
+    path_src_madlib=os.environ.get('PATH_SRC_MADLIB',None)
     # A list command
     lp = subp.add_parser('list',help='List existing modules')
-    lp.add_argument('dirname',action='store',help='Directory to list')
+    lp.add_argument('-p','--path_src_madlib',default=path_src_madlib,action='store',help='src directory of MADlib.')
     lp.set_defaults(func=subcmd_list)
     # A create command
     cp = subp.add_parser('create',help='Create a module')
-    cp.add_argument('dirname',action='store',help='Create modules into dirname')
+    cp.add_argument('dir',action='store',help='Create modules into target dir')
     cp.set_defaults(func=subcmd_create)
     # An install command
     ip = subp.add_parser('install',help='Install an existing module')
-    ip.add_argument('dirname',action='store',help='Install modules from dirname')
+    ip.add_argument('dir',action='store',help='Install modules from dir')
+    ip.add_argument('-p','--path_src_madlib',default=path_src_madlib,action='store',help='src directory of MADlib.')
     ip.set_defaults(func=subcmd_install)
     # An uninstall command
     up = subp.add_parser('uninstall',help='Remove an existing module')
     up.add_argument('modname',action='store',help='The module to uninstall')
+    up.add_argument('-p','--path_src_madlib',default=path_src_madlib,action='store',help='src directory of MADlib.')
     up.set_defaults(func=subcmd_uninstall)
     # parse arguments
     args = p.parse_args()
     # call subcmd
     args.func(args)
-    path_madlib_src = os.environ.get('PATH_MADLIB_SRC')
-    if path_madlib_src != None:
-        print path_madlib_src
+
 if __name__ == '__main__':
     main()
